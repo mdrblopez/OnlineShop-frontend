@@ -1,6 +1,7 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { UserContext } from "../UserContext";
 import { Navigate } from "react-router-dom";
+import UserProduct from "../UserProductPage";
 
 export default function PostPage() {
   const [title, setTitle] = useState("");
@@ -11,8 +12,21 @@ export default function PostPage() {
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState("");
   const [redirect, setRedirect] = useState(false);
-  const { userInfo } = useContext(UserContext);
+  const [products, setProducts] = useState([]);
+  const { userInfo, updatePostPage } = useContext(UserContext);
   const shopId = userInfo.id;
+
+  useEffect(() => {
+    fetch("http://localhost:4000/post").then((response) => {
+      response.json().then((posts) => {
+        setProducts(posts);
+      });
+    });
+  }, [updatePostPage]);
+  console.log(products);
+  //filter the user products
+  let userProductItems = products.filter((item) => item.shop === userInfo.id);
+  console.log(userProductItems);
 
   async function createNewPost(ev) {
     const data = new FormData();
@@ -40,53 +54,75 @@ export default function PostPage() {
     alert("Successfully posting the product!");
     return <Navigate to={"/"} />;
   }
+  if (!userInfo.id) {
+    return <Navigate to={"/"} />;
+  }
 
   return (
-    <form onSubmit={createNewPost} className="posting">
-      <h2>Product Details</h2>
-      <input
-        type="title"
-        placeholder="Title"
-        value={title}
-        onChange={(ev) => setTitle(ev.target.value)}
-      />
-      <input
-        type="category"
-        placeholder="Category"
-        value={category}
-        onChange={(ev) => setCategory(ev.target.value)}
-      />
-      <input
-        type="price"
-        placeholder="Price"
-        value={price}
-        onChange={(ev) => setPrice(ev.target.value)}
-      />
-      <input
-        type="rating"
-        placeholder="Rating"
-        value={rating}
-        onChange={(ev) => setRating(ev.target.value)}
-      />
-      <input
-        type="count"
-        placeholder="Count"
-        value={count}
-        onChange={(ev) => setCount(ev.target.value)}
-      />
-      <input
-        type="file"
-        // value={files}
-        onChange={(ev) => setFiles(ev.target.files)}
-      />
+    <div className="postPage">
+      <form onSubmit={createNewPost} className="posting">
+        <h2>Post: Product Details</h2>
+        <input
+          type="title"
+          placeholder="Title"
+          value={title}
+          onChange={(ev) => setTitle(ev.target.value)}
+        />
+        <input
+          type="category"
+          placeholder="Category"
+          value={category}
+          onChange={(ev) => setCategory(ev.target.value)}
+        />
+        <input
+          type="price"
+          placeholder="Price"
+          value={price}
+          onChange={(ev) => setPrice(ev.target.value)}
+        />
+        <input
+          type="rating"
+          placeholder="Rating"
+          value={rating}
+          onChange={(ev) => setRating(ev.target.value)}
+        />
+        <input
+          type="count"
+          placeholder="Count"
+          value={count}
+          onChange={(ev) => setCount(ev.target.value)}
+        />
+        <input
+          type="file"
+          // value={files}
+          onChange={(ev) => setFiles(ev.target.files)}
+        />
 
-      <textarea
-        name="description"
-        placeholder="Product Description"
-        value={description}
-        onChange={(ev) => setDescription(ev.target.value)}
-      />
-      <button style={{ marginTop: "5px" }}>Post Product</button>
-    </form>
+        <textarea
+          name="description"
+          placeholder="Product Description"
+          value={description}
+          onChange={(ev) => setDescription(ev.target.value)}
+        />
+        <button style={{ marginTop: "5px" }}>Post Product</button>
+      </form>
+      <div className="postPageProductList">
+        <h2>Your Product List</h2>
+
+        <div className="productName">
+          <h4>Product Name</h4>
+        </div>
+
+        <div className="postProuctList">
+          {userProductItems.length > 0 &&
+            userProductItems.map((product) => (
+              <UserProduct {...product} key={product._id} />
+            ))}
+          {userProductItems.length == 0 && (
+            <p> **** No available product ****</p>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

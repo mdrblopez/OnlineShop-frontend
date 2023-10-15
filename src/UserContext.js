@@ -12,6 +12,8 @@ export function UserContextProvider({ children }) {
   const [updateCart, setUpdateCart] = useState(0);
   const [searchInput, setSearchInput] = useState("");
   const [totalCartItems, setTotalCartItems] = useState(0);
+  const [addToCartCheck, setAddToCartCheck] = useState(0);
+  const [updatePostPage, setUpdatePostPage] = useState(0);
 
   const productDetail = (itemId) => {
     console.log(itemId);
@@ -55,6 +57,10 @@ export function UserContextProvider({ children }) {
         searchHandler,
         totalCartItems,
         setTotalCartItems,
+        addToCartCheck,
+        setAddToCartCheck,
+        updatePostPage,
+        setUpdatePostPage,
       }}
     >
       {children}

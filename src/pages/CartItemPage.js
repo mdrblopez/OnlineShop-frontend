@@ -7,7 +7,7 @@ export default function CartItemPage() {
   const [cartList, setCartList] = useState([]);
   const [totalPrice, setTotalPrice] = useState("0");
   const [totalQuantity, setTotalQuantity] = useState("0");
-  const { userInfo, updateCart } = useContext(UserContext);
+  const { userInfo, updateCart, setTotalCartItems } = useContext(UserContext);
   const user_id = userInfo.id;
 
   console.log(user_id);
@@ -24,6 +24,7 @@ export default function CartItemPage() {
   //filter the user cart items
   let userCartItems = cartList.filter((list) => list.userId === user_id);
   console.log(userCartItems);
+  setTotalCartItems(userCartItems.length);
 
   useEffect(() => {
     let price = 0;

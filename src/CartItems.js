@@ -13,8 +13,9 @@ export default function CartProducts({
 }) {
   const [productQuantity, setProductQuantity] = useState(itemQuantity);
   const [isIncluded, setIsIncluded] = useState(checkBox);
-  const { updateCart, setUpdateCart } = useContext(UserContext);
-
+  const { updateCart, setUpdateCart, setAddToCartCheck, addToCartCheck } =
+    useContext(UserContext);
+  let cartNumber = addToCartCheck + 1;
   // to update
   function quantitySubtract() {
     if (productQuantity > 1) {
@@ -84,6 +85,7 @@ export default function CartProducts({
     } else {
       alert("Failed to update.");
     }
+    setAddToCartCheck(cartNumber++);
   }
 
   // Remove item in the cart
@@ -99,6 +101,7 @@ export default function CartProducts({
 
     if (response.status === 200) {
       console.log("Successfully deleted.");
+
       if (updateCart < 1) {
         setUpdateCart(1);
       }
@@ -108,6 +111,7 @@ export default function CartProducts({
     } else {
       alert("Failed to delete.");
     }
+    setAddToCartCheck(cartNumber++);
   }
 
   return (

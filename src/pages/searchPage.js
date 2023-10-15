@@ -34,7 +34,9 @@ export default function SearchPage() {
   return (
     <div className="searchPage">
       <div className="result-homepageBtn">
-        <div className="searchText-text">Search Result for: {searchInput}</div>
+        <div className="searchText-text">
+          Search Result for: <b>{searchInput}</b>
+        </div>
         <button onClick={homepage}>Back to Homepage</button>
       </div>
 

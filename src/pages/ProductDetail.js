@@ -6,14 +6,24 @@ import { Navigate } from "react-router-dom";
 export default function ProductDetailPage() {
   const [loginPage, setLoginPage] = useState(false);
   const [cartList, setCartList] = useState([]);
-  const { userInfo, itemDetail, quantity, quantityHandler, searchHandler } =
-    useContext(UserContext);
+  const {
+    userInfo,
+    itemDetail,
+    quantity,
+    quantityHandler,
+    searchHandler,
+    setAddToCartCheck,
+    addToCartCheck,
+  } = useContext(UserContext);
+
+  let cartNumber = addToCartCheck + 1;
   const userId = userInfo.id;
   const productId = itemDetail._id;
   const productTitle = itemDetail.title;
   const productPrice = itemDetail.price;
   const productCover = itemDetail.cover;
 
+  let userCartItems = [];
   let itemQuantity = quantity;
   let checkBox = true;
   searchHandler("");
@@ -24,14 +34,27 @@ export default function ProductDetailPage() {
         setCartList(list);
       });
     });
-  }, []);
-  console.log(itemDetail._id);
+  }, [addToCartCheck]);
+
+  //To filter the user product list
+  cartList.forEach((item) => {
+    if (item.userId === userId) {
+      userCartItems.push(item);
+    }
+  });
+  console.log(userCartItems);
+
   //To filter if the product exist in the cart
-  const itemExist = cartList.find((list) => list.productId === itemDetail._id);
+  const itemExist = userCartItems.find(
+    (list) => list.productId === itemDetail._id
+  );
   console.log(itemExist);
 
   async function addToCart() {
+    setAddToCartCheck(cartNumber++);
+    console.log(addToCartCheck);
     console.log(cartList);
+    console.log(cartNumber);
     if (!itemExist) {
       const response = await fetch("http://localhost:4000/mycart", {
         method: "POST",
@@ -98,7 +121,9 @@ export default function ProductDetailPage() {
         </div>
         <div className="detailDescription">
           <ul className="itemDescription">
-            <li className="selectedTitle">{itemDetail.title}</li>
+            <li className="selectedTitle">
+              <b>{itemDetail.title}</b>
+            </li>
             <li>
               <span>&#8369; </span> {itemDetail.price}
             </li>

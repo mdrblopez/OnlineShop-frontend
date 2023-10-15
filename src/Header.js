@@ -1,17 +1,39 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "./UserContext";
 import { FaSearch } from "react-icons/fa";
 
 export default function Header() {
-  const { userInfo, setUserInfo, searchInput, searchHandler } =
-    useContext(UserContext);
+  const [cartList, setCartList] = useState([]);
+  let userCartItems = [];
+  const {
+    userInfo,
+    setUserInfo,
+    searchInput,
+    searchHandler,
+    addToCartCheck,
+    setAddToCartCheck,
+  } = useContext(UserContext);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/mycart").then((response) => {
+      response.json().then((list) => {
+        setCartList(list);
+      });
+    });
+  }, [addToCartCheck]);
+
+  //filter the user cart items
+  if (userInfo) {
+    userCartItems = cartList.filter((list) => list.userId === userInfo.id);
+    console.log(userCartItems);
+    setAddToCartCheck(1);
+  }
 
   //userInfo already set in login function..
-
-  console.log(userInfo);
-
   function logout() {
+    userCartItems = [];
+    setAddToCartCheck(0);
     // to invalidate the cookie
     fetch("http://localhost:4000/logout", {
       credentials: "include",
@@ -58,12 +80,19 @@ export default function Header() {
         <nav>
           {membertype === "merchant" && username && (
             <>
-              <Link to="/postproduct">Post</Link>
+              <Link to="/postproduct">
+                Post
+                <sup></sup>
+              </Link>
             </>
           )}
           {username && (
             <>
-              <Link to="/cart">Cart</Link>
+              <Link to="/cart">
+                Cart
+                <sup> {userCartItems.length}</sup>
+              </Link>
+
               <Link to="/">
                 <button id="logout" className="logout" onClick={logout}>
                   Logout

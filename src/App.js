@@ -1,4 +1,4 @@
-// to run clietn: npm start
+// to run client: npm start
 // to run Api: nodemon index.js
 
 import "./App.css";
